@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HandryaStore</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* Layout / Productos */
+    .card-img-top{
+      height: 220px;
+      object-fit: contain;
+      background:#198754;
+    }
+    @media (max-width:576px){ .card-img-top{height:160px;} }
+
+    /* Carrito (nuevo estilo - turquesa) */
+    #cartButton {
+      background:#0086a3;
+      border-radius: 50px;
+      padding: 8px 14px;
+      color:black;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    #cartButton:hover { background:#0086a3; transform: scale(1.03); }
+    #cartCount {
+      background: white;
+      color:#0086a3;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: inline-flex; justify-content:center; align-items:center;
+      font-weight:700; font-size:12px;
+    }
+
+    .cart-modal-header { background:#0086a3; color:aqua; }
+    .cart-item-img { width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:10px; }
+    .qty-btn {
+      width:30px; height:30px; border-radius:6px; border:none; background:#00b8d9; color:aquamarine;
+      cursor:pointer; font-weight:700;
+    }
+    .qty-btn:hover{ background:#0086a3; }
+    .remove-btn { background:transparent; border:none; color:#ff6262; font-size:20px; }
+    .confirm-buy { background:#0086a3 !important; border:none; }
+    .confirm-buy:hover { background:#0086a3 !important; }
+
+    /* Small notification */
+    .pedido-notif{ position: fixed; right: 20px; bottom: 20px; z-index: 2000; display:none;
+      align-items:center; gap:.5rem; padding:.6rem 1rem; border-radius:.5rem;
+      box-shadow:0 6px 18px rgba(0,0,0,.15); background: #fff; }
+    .pedido-notif .check { color:#0086a3; font-size:1.2rem; }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">HandryaStore</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="navbar-nav ms-auto align-items-center" id="navbarItems">
+          <li class="nav-item" id="btnAuthContainer">
+            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#authModal">
+              Iniciar sesión / Registrarse
+            </button>
+          </li>
+
+          <!-- placeholder: user info appended here when logged in -->
+          <li id="userInfoPlaceholder"></li>
+
+          <!-- Cart button (always visible) -->
+          <li class="nav-item ms-3">
+            <button id="cartButton" class="btn" type="button">
+              <i class="bi bi-bag-fill"></i> Carrito
+              <span id="cartCount">0</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-primary text-white text-center py-5">
+    <div class="container">
+      <h1 class="display-4">Bienvenido a HandryaStore</h1>
+      <p class="lead">Tu tienda de confianza al mejor precio</p>
+    </div>
+  </header>
+
+  <!-- PRODUCTS -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">NUESTROS PRODUCTOS</h2>
+      <div class="row g-4 justify-content-center">
+
+        <!-- PRODUCT 1 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/descarga (41).jpeg" class="card-img-top" alt="flor1">
+            <div class="card-body text-center">
+              <h5 class="card-title">Ramo de flores eternas</h5>
+              <p class="card-text">Decoración natural y duradera</p>
+              <p class="fw-bold">s/30.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor1" data-name="Ramo de flores eternas" data-price="30">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 2 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/descarga (42).jpeg" class="card-img-top" alt="flor2">
+            <div class="card-body text-center">
+              <h5 class="card-title">Variedad de ramos eternos</h5>
+              <p class="card-text">Flores eternas</p>
+              <p class="fw-bold">s/45.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor2" data-name="Variedad de ramos eternos" data-price="45">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 3 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/descarga (43).jpeg" class="card-img-top" alt="flor3">
+            <div class="card-body text-center">
+              <h5 class="card-title">Variedad de ramos eternos</h5>
+              <p class="card-text">Flores eternas</p>
+              <p class="fw-bold">s/45.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor3" data-name="Variedad de ramos eternos" data-price="45">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 4 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/descarga (44).jpeg" class="card-img-top" alt="flor4">
+            <div class="card-body text-center">
+              <h5 class="card-title">Variedad de ramos eternos</h5>
+              <p class="card-text">Flores eternas</p>
+              <p class="fw-bold">s/45.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor4" data-name="Variedad de ramos eternos" data-price="45">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 5 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/Rosas eternas amarillas.jpeg" class="card-img-top" alt="flor5">
+            <div class="card-body text-center">
+              <h5 class="card-title">Rosas eternas amarillas</h5>
+              <p class="card-text">Flores eternas</p>
+              <p class="fw-bold">s/50.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor5" data-name="Rosas eternas amarillas" data-price="50">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRODUCT 6 -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <img src="images/Rosas eternas.jpeg" class="card-img-top" alt="flor6">
+            <div class="card-body text-center">
+              <h5 class="card-title">Rosas eternas</h5>
+              <p class="card-text">Flores eternas</p>
+              <p class="fw-bold">s/35.00</p>
+              <button class="btn btn-primary add-to-cart" data-id="flor6" data-name="Rosas eternas" data-price="35">
+                AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL AUTH (LOGIN / REGISTER) -->
+  <div class="modal fade" id="authModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">Acceder a HandryaStore</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs mb-3">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#loginTab">Iniciar Sesión</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#registerTab">Registrarse</button></li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane show active" id="loginTab">
+              <div class="d-grid mb-3">
+                <button id="googleLogin" type="button" class="btn btn-danger"><i class="bi bi-google"></i> Iniciar sesión con Google</button>
+              </div>
+              <form id="formLogin">
+                <div class="mb-3"><label>Email</label><input type="email" id="loginEmail" class="form-control" required></div>
+                <div class="mb-3"><label>Contraseña</label><input type="password" id="loginPassword" class="form-control" required minlength="6"></div>
+                <button class="btn btn-primary w-100">Iniciar Sesión</button>
+              </form>
+            </div>
+
+            <div class="tab-pane" id="registerTab">
+              <form id="formRegister">
+                <div class="mb-3"><label>Nombre completo</label><input type="text" id="regNombre" class="form-control" required></div>
+                <div class="mb-3"><label>Email</label><input type="email" id="regEmail" class="form-control" required></div>
+                <div class="mb-3"><label>Contraseña</label><input type="password" id="regPassword" class="form-control" required minlength="6"></div>
+                <button class="btn btn-primary w-100">Registrarse</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW CART MODAL -->
+  <div class="modal fade" id="newCartModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header cart-modal-header">
+          <h5 class="modal-title"><i class="bi bi-bag-heart"></i> Mi Carrito</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="newCartList"></div>
+        <div class="modal-footer">
+          <button id="btnConfirmarCompra" class="btn btn-primary confirm-buy">Confirmar compra</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERS MODAL -->
+  <div class="modal fade" id="ordersModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">📦 Mis pedidos</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ordersBody">
+          <div id="noOrdersMsg" class="text-center text-muted">Aún no tienes pedidos registrados</div>
+          <div id="ordersList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <p class="mb-0">&copy; 2025 HandryaStore - Todos los derechos reservados</p>
+  </footer>
+
+  <!-- small notification -->
+  <div id="pedidoNotif" class="pedido-notif" role="status" aria-live="polite">
+    <span class="check">✅</span>
+    <div id="pedidoNotifText">Pedido registrado correctamente</div>
+  </div>
+
+  <!-- FIREBASE + APP SCRIPTS -->
+  <script type="module">
+    /* Firebase v10 modules */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
+      createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, query, where, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+    // --- YOUR FIREBASE CONFIG (keep as-is or replace with yours) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyA489n8aiwNL1tQ8yfMDRbW-SffpL-CIN0",
+      authDomain: "handryastore-96e39.firebaseapp.com",
+      projectId: "handryastore-96e39",
+      storageBucket: "handryastore-96e39.firebasestorage.app",
+      messagingSenderId: "406350600953",
+      appId: "1:406350600953:web:07b6862256e52d6510a028",
+      measurementId: "G-173P1KBHQZ"
+    };
+
+    // init
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    // DOM refs
+    const googleBtn = document.getElementById("googleLogin");
+    const loginForm = document.getElementById("formLogin");
+    const registerForm = document.getElementById("formRegister");
+    const btnAuthContainer = document.getElementById("btnAuthContainer");
+    const navbarItems = document.getElementById("navbarItems");
+    const pedidoNotif = document.getElementById("pedidoNotif");
+    const pedidoNotifText = document.getElementById("pedidoNotifText");
+
+    // state
+    let currentUser = null;
+    let cart = {}; // { id: { id, name, price, img, qty } }
+
+    // --- localStorage helpers ---
+    function cartKey(uid) { return `handrya_cart_${uid || 'guest'}`; }
+    function loadCart() {
+      const raw = localStorage.getItem(cartKey(currentUser?.uid));
+      cart = raw ? JSON.parse(raw) : {};
+      updateCartCount();
+    }
+    function saveCart() {
+      localStorage.setItem(cartKey(currentUser?.uid), JSON.stringify(cart));
+    }
+
+    // update small badge in navbar
+    function updateCartCount() {
+      const countEl = document.getElementById("cartCount");
+      if (!countEl) return;
+      const total = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+      countEl.textContent = total;
+    }
+
+    // Render user area in navbar when logged in
+    function renderUserNavbar(user) {
+      // remove previous if exists
+      const existing = document.getElementById("userInfo");
+      if (existing) existing.remove();
+
+      const foto = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}`;
+      const nombre = user.displayName || user.email;
+
+      const li = document.createElement("li");
+      li.className = 'nav-item dropdown ms-3 d-flex align-items-center';
+      li.id = 'userInfo';
+      li.innerHTML = `
+        <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="${foto}" class="rounded-circle me-2" width="32" height="32">
+          <span>${nombre}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="#" id="abrirPedidos">📦 Mis pedidos</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#" id="cerrarSesionBtn">Cerrar sesión</a></li>
+        </ul>
+      `;
+      // insert before cart button (so cart remains last)
+      const cartLi = document.querySelector('#cartButton')?.closest('li');
+      if (cartLi) navbarItems.insertBefore(li, cartLi);
+      else navbarItems.appendChild(li);
+
+      // listeners
+      document.getElementById('cerrarSesionBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await signOut(auth);
+      });
+      document.getElementById('abrirPedidos').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await mostrarPedidosModal();
+      });
+    }
+
+    function limpiarUsuarioNavbar() {
+      const info = document.getElementById('userInfo'); if (info) info.remove();
+    }
+
+    // --- ADD TO CART BUTTONS ---
+    // delegate: buttons already in DOM with class 'add-to-cart'
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.add-to-cart');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      const price = Number(btn.dataset.price);
+      const imgEl = btn.closest('.card')?.querySelector('.card-img-top');
+      const img = imgEl ? imgEl.getAttribute('src') : '';
+      // if not logged, show auth modal
+      if (!currentUser) {
+        const m = new bootstrap.Modal(document.getElementById('authModal')); m.show(); return;
+      }
+      if (!cart[id]) cart[id] = { id, name, price, img, qty: 0 };
+      cart[id].qty += 1;
+      saveCart();
+      updateCartCount();
+      // small feedback
+      btn.textContent = 'Añadido ✓';
+      setTimeout(()=> btn.innerHTML = 'AGREGAR AL CARRITO', 900);
+    });
+
+    // CART RENDER (modal: newCartModal)
+    function renderCart() {
+      const list = document.getElementById('newCartList');
+      const items = Object.values(cart);
+      if (items.length === 0) {
+        list.innerHTML = `<p class="text-center text-muted">Tu carrito está vacío</p>`; return;
+      }
+      let html = '';
+      items.forEach(p => {
+        html += `
+          <div class="d-flex align-items-center border-bottom py-3">
+            <img src="${p.img || 'https://via.placeholder.com/60'}" class="cart-item-img" onerror="this.style.display='none'">
+            <div class="flex-grow-1">
+              <b>${p.name}</b><br>
+              <small>s/${p.price}</small>
+            </div>
+            <div class="d-flex align-items-center">
+              <button class="qty-btn me-2" onclick="changeQty('${p.id}', -1)">−</button>
+              <div style="width:36px;text-align:center">${p.qty}</div>
+              <button class="qty-btn ms-2" onclick="changeQty('${p.id}', 1)">+</button>
+            </div>
+            <button class="remove-btn ms-3" onclick="removeItem('${p.id}')"><i class="bi bi-x-circle-fill"></i></button>
+          </div>
+        `;
+      });
+      const total = items.reduce((s,p)=> s + p.price * p.qty, 0);
+      html += `<div class="text-end mt-3 fs-5"><b>Total: s/${total.toFixed(2)}</b></div>`;
+      list.innerHTML = html;
+    }
+
+    // functions exposed to global (used by onclick in render)
+    window.changeQty = function(id, delta) {
+      if (!cart[id]) return;
+      cart[id].qty += delta;
+      if (cart[id].qty <= 0) delete cart[id];
+      saveCart();
+      renderCart();
+      updateCartCount();
+    };
+    window.removeItem = function(id) {
+      delete cart[id];
+      saveCart();
+      renderCart();
+      updateCartCount();
+    };
+
+    // open cart button
+    document.getElementById('cartButton').addEventListener('click', () => {
+      renderCart();
+      const m = new bootstrap.Modal(document.getElementById('newCartModal'));
+      m.show();
+    });
+
+    // CONFIRM PURCHASE -> save order in Firestore
+    document.getElementById('btnConfirmarCompra').addEventListener('click', async () => {
+      if (!currentUser) { alert('Debes iniciar sesión antes de comprar'); return; }
+      const items = Object.values(cart);
+      if (items.length === 0) { alert('Tu carrito está vacío'); return; }
+      const pedido = {
+        uid: currentUser.uid,
+        productos: items.map(i => ({ id:i.id, nombre:i.name, precio:i.price, cantidad:i.qty, subtotal: i.price * i.qty })),
+        total: items.reduce((s,i) => s + i.price * i.qty, 0),
+        creadoEn: new Date().toISOString()
+      };
+      try {
+        await addDoc(collection(db, 'pedidos'), pedido);
+        // clear cart
+        cart = {};
+        saveCart();
+        updateCartCount();
+        bootstrap.Modal.getInstance(document.getElementById('newCartModal')).hide();
+        // show notif
+        pedidoNotifText.textContent = 'Pedido registrado correctamente';
+        pedidoNotif.style.display = 'flex';
+        setTimeout(()=> pedidoNotif.style.display = 'none', 2500);
+      } catch (err) {
+        console.error('Error guardando pedido:', err);
+        alert('Error registrando pedido');
+      }
+    });
+
+    // SHOW ORDERS MODAL
+    async function mostrarPedidosModal() {
+      if (!currentUser) { alert('Debes iniciar sesión para ver tus pedidos'); return; }
+      const ordersList = document.getElementById('ordersList');
+      const noOrdersMsg = document.getElementById('noOrdersMsg');
+      ordersList.innerHTML = '';
+      noOrdersMsg.style.display = 'none';
+      try {
+        const q = query(collection(db, 'pedidos'), where('uid', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          noOrdersMsg.style.display = 'block';
+          new bootstrap.Modal(document.getElementById('ordersModal')).show();
+          return;
+        }
+        const pedidos = [];
+        snap.forEach(ds => { pedidos.push({ id: ds.id, data: ds.data() }); });
+        // sort by creadoEn if present
+        pedidos.sort((a,b) => {
+          const ta = a.data.creadoEn ? new Date(a.data.creadoEn).getTime() : 0;
+          const tb = b.data.creadoEn ? new Date(b.data.creadoEn).getTime() : 0;
+          return tb - ta;
+        });
+        pedidos.forEach((p, idx) => {
+          const prodHtml = Array.isArray(p.data.productos) && p.data.productos.length
+            ? p.data.productos.map(item => `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>${item.nombre}</strong><br><small>${item.cantidad} x s/${item.precio}</small>
+                  </div>
+                  <div class="fw-bold">s/${(item.subtotal||item.precio*item.cantidad).toFixed(2)}</div>
+                </li>`).join('')
+            : '<li class="list-group-item">No hay productos</li>';
+          const cont = document.createElement('div');
+          cont.className = 'border rounded p-3 mb-3';
+          const fecha = p.data.creadoEn ? new Date(p.data.creadoEn) : null;
+          const fechaStr = fecha ? `${fecha.toLocaleDateString()}, ${fecha.toLocaleTimeString()}` : 'Fecha no disponible';
+          cont.innerHTML = `
+            <h5 class="mb-1">📦 Pedido #${idx + 1}</h5>
+            <div class="text-muted mb-3">${fechaStr}</div>
+            <ul class="list-group mb-3">${prodHtml}</ul>
+            <div class="text-end fw-bold fs-5">Total: s/${Number(p.data.total || 0).toFixed(2)}</div>
+          `;
+          ordersList.appendChild(cont);
+        });
+        new bootstrap.Modal(document.getElementById('ordersModal')).show();
+      } catch (err) {
+        console.error('Error fetching orders', err);
+        alert('Error recuperando pedidos');
+      }
+    }
+
+    // AUTH: Google / Register / Login
+    googleBtn.addEventListener('click', async () => {
+      try {
+        const res = await signInWithPopup(auth, provider);
+        await crearUsuarioSiNoExiste(res.user);
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+      } catch (err) {
+        console.error(err);
+        alert('Error con Google Sign-In');
+      }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('regNombre').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        if (nombre) await updateProfile(cred.user, { displayName: nombre });
+        await crearUsuarioSiNoExiste(cred.user);
+        alert('Registro exitoso');
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+      } catch (err) {
+        console.error(err);
+        alert('Error registrando usuario');
+      }
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+        bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+      } catch (err) {
+        console.error(err);
+        alert('Credenciales inválidas');
+      }
+    });
+
+    // create user doc on Firestore if not exists
+    async function crearUsuarioSiNoExiste(user) {
+      if (!user) return;
+      const ref = doc(db, 'usuarios', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { uid: user.uid, nombre: user.displayName || '', email: user.email || '', foto: user.photoURL || '', creadoEn: new Date().toISOString() });
+      }
+    }
+
+    // onAuth state
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (user) {
+        // hide auth btn
+        if (btnAuthContainer) btnAuthContainer.style.display = 'none';
+        renderUserNavbar(user);
+        loadCart(); // load cart for this uid
+      } else {
+        if (btnAuthContainer) btnAuthContainer.style.display = 'block';
+        limpiarUsuarioNavbar();
+        currentUser = null;
+        cart = {};
+        loadCart(); // load guest cart
+      }
+    });
+
+    // initialize (load guest cart)
+    loadCart();
+
+    // expose mostrarPedidosModal globally so navbar can call it (if needed)
+    window.mostrarPedidosModal = mostrarPedidosModal;
+
+  </script>
+
+  <!-- Bootstrap bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
